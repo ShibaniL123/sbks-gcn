@@ -14,6 +14,7 @@ if config.getboolean('SEGMENTATION', 'no_relation'):
 else:
     no_rel_label = None
 
+print("Shibani Repo")
 test = config.getboolean('DEFAULT', 'test')
 binary = config.getboolean('DEFAULT', 'binary_classification')
 write_predictions = config.getboolean('DEFAULT', 'write_predictions')
