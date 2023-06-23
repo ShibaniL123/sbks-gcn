@@ -311,7 +311,7 @@ class VGCN_BERT:
         plt.legend()
 
         # Save the figure
-        plt.savefig('loss_graph.png')           
+        plt.savefig('loss_graph_2.png')           
         print('\n**Optimization Finished!,Total spend:', (time.time() - train_start) / 60.0)
         pred, confidence = predict(model, test_dataloader)
 
