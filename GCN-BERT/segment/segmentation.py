@@ -84,7 +84,7 @@ class Segmentation:
 
     def __init__(self, dataset=None, rel_labels=None, no_rel_label=None, no_rel_multiple=False, sentence_align=False,
                  test=False, same_entity_relation=False, dominant_entity='S', write_Entites=False, generalize=False,
-                 no_of_cores=64, predictions_folder=None, down_sample = True, down_sample_ratio=0.4):
+                 no_of_cores=64, predictions_folder=None, down_sample = True, down_sample_ratio=0.6):
 
         """
            Data files are read as input and the sentences where the entity pair is located is segmented into five segments
@@ -185,6 +185,7 @@ class Segmentation:
             # if not self.test:
             self.segments['label'].extend(segment['label'])
 
+        print("final train count")
         if not self.test:
             # print([(i, self.segments['label'].count(i)) for i in set(self.segments['label'])])
             print([(i, self.segments['label'].count(i)) for i in set(self.segments['label'])])
