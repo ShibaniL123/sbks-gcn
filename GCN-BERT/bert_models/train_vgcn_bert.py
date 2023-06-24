@@ -30,7 +30,7 @@ device = torch.device("cuda:0" if cuda_yes else "cpu")
 
 class VGCN_BERT:
     def __init__(self, model, cleanData, buildGraph, initial_predictions=None, final_predictions=None, del_stop_words=False, model_type='VGCN_BERT', train_epochs=15,
-                 dropout=0.2, batch_size=8, gcn_embedding_dim=16, learning_rate0= 3e-5, l2_decay=0.001):
+                 dropout=0.1, batch_size=16, gcn_embedding_dim=16, learning_rate0= 5e-5, l2_decay=0.001):
         self.model = model
         self.data = cleanData
         self.graph = buildGraph
@@ -302,7 +302,7 @@ class VGCN_BERT:
             print("Epoch:{} completed, Total Train Loss:{}, Valid Loss:{}, Spend {}m ".format(epoch, tr_loss, valid_loss,
                                                                                             (time.time() - train_start) / 60.0))
         
-
+        
         plt.plot(all_loss_list['train'], label='Training Loss')
         plt.plot(all_loss_list['valid'], label='Validation Loss')
         plt.xlabel('Epoch')
@@ -311,7 +311,7 @@ class VGCN_BERT:
         plt.legend()
 
         # Save the figure
-        plt.savefig('loss_graph.png')           
+        plt.savefig('loss_graph_2.png')           
         print('\n**Optimization Finished!,Total spend:', (time.time() - train_start) / 60.0)
         pred, confidence = predict(model, test_dataloader)
 
