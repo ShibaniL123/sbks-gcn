@@ -8,6 +8,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import matplotlib.pyplot as plt
 
 from utils import *
 from torch.utils.data import DataLoader
@@ -113,7 +114,7 @@ class VGCN_BERT:
         gc.collect()
         print(self.graph.class_labels)
         train_classes_num, train_classes_weight = get_class_count_and_weight(train_y, len(self.graph.class_labels))
-
+        print("train class weight",train_classes_weight)
         loss_weight = torch.tensor(train_classes_weight).to(device)
 
         # tokenizer = BertTokenizer.from_pretrained(bert_model_scale, do_lower_case=do_lower_case)
@@ -204,7 +205,7 @@ class VGCN_BERT:
                         if loss_weight is None:
                             loss = F.cross_entropy(logits.view(-1, num_classes), label_ids)
                         else:
-                            loss = F.cross_entropy(logits.view(-1, num_classes), label_ids)
+                            loss = F.cross_entropy(logits.view(-1, num_classes), label_ids, weight = loss_weight.float())
                     ev_loss += loss.item()
 
                     _, predicted = torch.max(logits, -1)
@@ -300,7 +301,17 @@ class VGCN_BERT:
             # all_f1_list['test'].append(test_f1)
             print("Epoch:{} completed, Total Train Loss:{}, Valid Loss:{}, Spend {}m ".format(epoch, tr_loss, valid_loss,
                                                                                             (time.time() - train_start) / 60.0))
+        
 
+        plt.plot(all_loss_list['train'], label='Training Loss')
+        plt.plot(all_loss_list['valid'], label='Validation Loss')
+        plt.xlabel('Epoch')
+        plt.ylabel('Loss')
+        plt.title('Training and Validation Loss')
+        plt.legend()
+
+        # Save the figure
+        plt.savefig('loss_graph.png')           
         print('\n**Optimization Finished!,Total spend:', (time.time() - train_start) / 60.0)
         pred, confidence = predict(model, test_dataloader)
 

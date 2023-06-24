@@ -22,6 +22,7 @@ def segment(train, test, entites, no_rel=None, no_rel_multiple=False, dominant_e
     :return: segments of train and test data
     """
     if no_rel:
+        print("in rel")
         seg_train = Segmentation(Dataset(train), entites, no_rel, no_rel_multiple, dominant_entity=dominant_entity,
                                  no_of_cores=no_of_cores, predictions_folder=predictions_folder, down_sample=down_sample,
                                  down_sample_ratio=down_sample_ratio).segments

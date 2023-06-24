@@ -1,9 +1,9 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: aarthy-gcn-re
+  name: shib-e2-gcn-re
   labels:
-    k8s-app: aarthy-gcn-re
+    k8s-app: shib-e2-gcn-re
   namespace: sbks
 spec:
   backoffLimit: 0
@@ -11,14 +11,14 @@ spec:
     spec:
       automountServiceAccountToken: false
       containers:
-      - name: aarthy-gcn-re
+      - name: shib-e2-gcn-re
         image: jiaweitang/sbks-torch:latest
         command:
         - "/bin/bash"
         - "-c"
         - >
           cd /root &&
-          git clone https://aarthy-22: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@github.com/aarthy-22/sbks-gcn.git &&
+          git clone https://ShibaniL123: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@github.com/ShibaniL123/sbks-gcn.git &&
           cd /root/sbks-gcn/GCN-BERT &&
           conda install boto3 nltk pandas scipy=1.4.1 && 
           mkdir ../data/merged/predictions &&
