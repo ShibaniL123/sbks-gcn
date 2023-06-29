@@ -34,7 +34,7 @@ class VGCN_BERT:
         self.model = model
         self.data = cleanData
         self.graph = buildGraph
-
+        print("device",device)
         MAX_SEQ_LENGTH = 200 + gcn_embedding_dim
         gradient_accumulation_steps = 1
         bert_model_scale = 'bert-base-uncased'
@@ -127,13 +127,13 @@ class VGCN_BERT:
                 return DataLoader(dataset=ds,
                                   batch_size=batch_size,
                                   shuffle=False,
-                                  num_workers=2,
+                                  num_workers=0,
                                   collate_fn=ds.pad)
             elif shuffle_choice == 1:  # shuffle==True
                 return DataLoader(dataset=ds,
                                   batch_size=batch_size,
                                   shuffle=True,
-                                  num_workers=2,
+                                  num_workers=0,
                                   collate_fn=ds.pad)
             elif shuffle_choice == 2:  # weighted resampled
                 assert classes_weight is not None
@@ -144,7 +144,7 @@ class VGCN_BERT:
                 return DataLoader(dataset=ds,
                                   batch_size=batch_size,
                                   sampler=sampler,
-                                  num_workers=2,
+                                  num_workers=0,
                                   collate_fn=ds.pad)
 
         train_dataloader = get_pytorch_dataloader(train_examples, tokenizer, batch_size, shuffle_choice=0)
@@ -250,7 +250,7 @@ class VGCN_BERT:
 
         all_loss_list = {'train': [], 'valid': [], 'test': []}
         all_f1_list = {'train': [], 'valid': [], 'test': []}
-
+        print("training start")
         for epoch in range(start_epoch, train_epochs):
             print(epoch)
             tr_loss = 0
@@ -258,16 +258,18 @@ class VGCN_BERT:
             model.train()
             optimizer.zero_grad()
             # for step, batch in enumerate(tqdm(train_dataloader, desc="Iteration")):
+            print("entering loop")
             for step, batch in enumerate(train_dataloader):
+                #print("in the loop")
                 if prev_save_step > -1:
                     if step <= prev_save_step: continue
                 if prev_save_step > -1:
                     prev_save_step = -1
                 batch = tuple(t.to(device) for t in batch)
                 input_ids, input_mask, segment_ids, y_prob, label_ids, gcn_swop_eye = batch
-
+                #print("here")
                 logits = model(gcn_adj_list, gcn_swop_eye, input_ids, segment_ids, input_mask)
-
+                #print("got logits")
                 if cfg_loss_criterion == 'mse':
                     if do_softmax_before_mse:
                         logits = F.softmax(logits, -1)
@@ -281,7 +283,7 @@ class VGCN_BERT:
                 if gradient_accumulation_steps > 1:
                     loss = loss / gradient_accumulation_steps
                 loss.backward()
-
+                #print("loss backward")
                 tr_loss += loss.item()
                 if (step + 1) % gradient_accumulation_steps == 0:
                     optimizer.step()

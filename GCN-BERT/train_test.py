@@ -60,8 +60,12 @@ def run_GCN_model(seg_train, seg_test, embedding_path, embedding_binary, gcn_mod
     :return: None
     """
     if gcn_model == 'corpus-level':
+        print("building model")
         model = Model(data_object=seg_train, data_object_test=seg_test, segment=segment, entity_masking=entity_masking,
                       replace_entity_pair=replace_entity_pair, test=True, train_path=train_path, test_path=test_path)
+        print("model")
         clean_data = DataCleaning(model)
+        print("data cleaned")
         graph = BuildGraph(model, clean_data)
+        print("graph built")
         vgcn_bert = VGCN_BERT(model, clean_data, graph, initial_predictions=initial_predictions,final_predictions=final_predictions)

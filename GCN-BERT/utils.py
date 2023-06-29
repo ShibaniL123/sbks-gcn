@@ -183,6 +183,8 @@ class CorpusDataset(Dataset):
 
         f_collect = lambda x: [sample[x] for sample in batch]
         f_pad = lambda x, seqlen: [sample[x] + [0] * (seqlen - len(sample[x])) for sample in batch]
+        combined_array = np.concatenate(f_collect(3))
+        #combined_array_2 = np.concatenate(f_collect(4))
         # filliing with -1, for indicate the position of this pad is not in gcn_vocab_list. then for generate the transform order tensor and delete this column.
         # first -1 correspond[CLS]
         f_pad2 = lambda x, seqlen: [[-1]+ sample[x] + [-1] * (seqlen - len(sample[x])-1) for sample in batch]
@@ -190,7 +192,7 @@ class CorpusDataset(Dataset):
         batch_input_ids = torch.tensor(f_pad(0, maxlen), dtype=torch.long)
         batch_input_mask = torch.tensor(f_pad(1, maxlen), dtype=torch.long)
         batch_segment_ids = torch.tensor(f_pad(2, maxlen), dtype=torch.long)
-        batch_confidences = torch.tensor(f_collect(3), dtype=torch.float)
+        batch_confidences = torch.tensor(combined_array, dtype=torch.float)
         batch_label_ids = torch.tensor(f_collect(4), dtype=torch.long)
         batch_gcn_vocab_ids_paded = np.array(f_pad2(5, maxlen)).reshape(-1)
         #generate eye matrix according to gcn_vocab_size+1, the 1 is for f_pad2 filling -1, then change to the row with all 0 value.

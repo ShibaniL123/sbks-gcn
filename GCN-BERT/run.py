@@ -61,6 +61,7 @@ if test:
                                                  dominant_entity[0],
                                                  config.getint('SEGMENTATION', 'no_of_cores'),
                                                 )
+        print("segmentation done")
 
         train_test.run_GCN_model(seg_train, seg_test, config['GCN_MODELS']['embedding_path'],
                                  config.getint('GCN_MODELS', 'embedding_dim'),
