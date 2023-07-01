@@ -32,7 +32,7 @@ device = torch.device("cuda:0" if cuda_yes else "cpu")
 class VGCN_BERT:
     def __init__(self, model, cleanData, buildGraph, initial_predictions=None, final_predictions=None, del_stop_words=False, model_type='VGCN_BERT', train_epochs=15,
                  dropout=0.2, batch_size=8, gcn_embedding_dim=16, learning_rate0= 1e-5, l2_decay=0.001):
-        file_path = "sbksvol/shibani/logs1.txt"
+        file_path = "/sbksvol/shibani/logs1.txt"
         file = open(file_path, "w")
         self.model = model
         self.data = cleanData
