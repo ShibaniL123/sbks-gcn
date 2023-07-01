@@ -9,7 +9,7 @@ from csv import reader
 
 class Set_Connection:
     def __init__(self, dataset=None, rel_labels=None, no_labels=None, test=False, no_rel_multiple=False,
-                 dominant_entity = 'S', no_of_cores = 64, down_sample=False, down_sample_ratio=None, predictions_folder = None,
+                 dominant_entity = 'S', no_of_cores = 64, down_sample=False, down_sample_ratio=0.6, predictions_folder = None,
                  write_Entites = False, sentence_only = False):
         """
         Creates data objects directly from the dataset folder and call for segmentation or take in segments (a set of CSVs)

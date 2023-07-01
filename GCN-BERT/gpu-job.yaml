@@ -17,9 +17,9 @@ spec:
         - "/bin/bash"
         - "-c"
         - >
-          cd /root &&
+          cd /sbksvol &&
           git clone https://ShibaniL123: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@github.com/ShibaniL123/sbks-gcn.git &&
-          cd /root/sbks-gcn/GCN-BERT &&
+          cd /sbksvol/sbks-gcn/GCN-BERT &&
           conda install boto3 nltk pandas scipy=1.4.1 && 
           mkdir ../data/merged/predictions &&
           mkdir ../data/merged/predictions/binary &&

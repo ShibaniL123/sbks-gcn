@@ -7,7 +7,7 @@ from data_prep import Dataset
 
 
 def segment(train, test, entites, no_rel=None, no_rel_multiple=False, dominant_entity='S', no_of_cores=64,
-            down_sample=False, down_sample_ratio=None, predictions_folder=None):
+            down_sample=False, down_sample_ratio=0.6, predictions_folder=None):
     """
     Segmentation of the training and testing data
     :param down_sample:
