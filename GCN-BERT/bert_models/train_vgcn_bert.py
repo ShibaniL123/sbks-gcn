@@ -37,7 +37,7 @@ class VGCN_BERT:
         self.model = model
         self.data = cleanData
         self.graph = buildGraph
-        print("device",device)
+        print("device",device,file=file)
         MAX_SEQ_LENGTH = 200 + gcn_embedding_dim
         gradient_accumulation_steps = 1
         bert_model_scale = 'bert-base-uncased'
@@ -108,17 +108,16 @@ class VGCN_BERT:
         for i in range(len(gcn_vocab_adj_list)):
             adj = gcn_vocab_adj_list[i]  # .tocsr() #(lr是用非norm时的1/10)
             print('  Zero ratio(?>66%%) for vocab adj %dth: %.8f' % (
-                i, 100 * (1 - adj.count_nonzero() / (adj.shape[0] * adj.shape[1]))))
+                i, 100 * (1 - adj.count_nonzero() / (adj.shape[0] * adj.shape[1]))),file=file)
             adj = normalize_adj(adj)
             norm_gcn_vocab_adj_list.append(sparse_scipy2torch(adj.tocoo()).to(device))
         gcn_adj_list = norm_gcn_vocab_adj_list
 
         del gcn_vocab_adj_tf, gcn_vocab_adj, gcn_vocab_adj_list
         gc.collect()
-        print(self.graph.class_labels)
+        print(self.graph.class_labels,file=file)
         train_classes_num, train_classes_weight = get_class_count_and_weight(train_y, len(self.graph.class_labels))
-        print("train class weight",train_classes_weight)
-        file.write("train class weight",train_classes_weight)
+        print("train class weight",train_classes_weight,file=file)
         loss_weight = torch.tensor(train_classes_weight).to(device)
 
         # tokenizer = BertTokenizer.from_pretrained(bert_model_scale, do_lower_case=do_lower_case)
@@ -157,18 +156,12 @@ class VGCN_BERT:
 
         # total_train_steps = int(len(train_examples) / batch_size / gradient_accumulation_steps * total_train_epochs)
         total_train_steps = int(len(train_dataloader) / gradient_accumulation_steps * train_epochs)
-        print('  Train_classes count:', train_classes_num)
+        print('  Train_classes count:', train_classes_num, file=file)
         print('  Num examples for train =', len(train_examples), ', after weight sample:',
-              len(train_dataloader) * batch_size)
-        print("  Num examples for validate = %d" % len(valid_examples))
-        print("  Batch size = %d" % batch_size)
-        print("  Num steps = %d" % total_train_steps)
-        file.write('  Train_classes count:', train_classes_num)
-        file.write('  Num examples for train =', len(train_examples), ', after weight sample:',
-              len(train_dataloader) * batch_size)
-        file.write("  Num examples for validate = %d" % len(valid_examples))
-        file.write("  Batch size = %d" % batch_size)
-        file.write("  Num steps = %d" % total_train_steps)
+              len(train_dataloader) * batch_size, file=file)
+        print("  Num examples for validate = %d" % len(valid_examples),file=file)
+        print("  Batch size = %d" % batch_size,file=file)
+        print("  Num steps = %d" % total_train_steps,file=file)
         # %%
         '''
         Train vgcn_bert model
@@ -227,25 +220,17 @@ class VGCN_BERT:
                 f1_metrics = f1_score(np.array(all_label_ids).reshape(-1),
                                       np.array(predict_out).reshape(-1), average='weighted')
                 print("Report:\n" + classification_report(np.array(all_label_ids).reshape(-1),
-                                                          np.array(predict_out).reshape(-1), digits=4))
-                file.write("Report:\n" + classification_report(np.array(all_label_ids).reshape(-1),
-                                                          np.array(predict_out).reshape(-1), digits=4))
+                                                          np.array(predict_out).reshape(-1), digits=4),file=file)
 
             ev_acc = correct / total
             end = time.time()
             print('Epoch : %d, %s: %.3f Acc : %.3f on %s, Spend:%.3f minutes for evaluation'
                   % (epoch_th, ' '.join(perform_metrics_str), 100 * f1_metrics, 100. * ev_acc, dataset_name,
-                     (end - start) / 60.0))
-            print('--------------------------------------------------------------')
-
-            file.write('Epoch : %d, %s: %.3f Acc : %.3f on %s, Spend:%.3f minutes for evaluation'
-                  % (epoch_th, ' '.join(perform_metrics_str), 100 * f1_metrics, 100. * ev_acc, dataset_name,
-                     (end - start) / 60.0))
-            file.write('--------------------------------------------------------------')
-
+                     (end - start) / 60.0),file=file)
+            print('--------------------------------------------------------------',file=file)
             return ev_loss, ev_acc, f1_metrics
 
-        print("\n----- Running training -----")
+        print("\n----- Running training -----",file=file)
 
         start_epoch = 0
         valid_acc_prev = 0
@@ -267,9 +252,9 @@ class VGCN_BERT:
 
         all_loss_list = {'train': [], 'valid': [], 'test': []}
         all_f1_list = {'train': [], 'valid': [], 'test': []}
-        print("training start")
+        print("training start",file=file)
         for epoch in range(start_epoch, train_epochs):
-            print(epoch)
+            print(epoch,file=file)
             tr_loss = 0
             ep_train_start = time.time()
             model.train()
@@ -308,13 +293,10 @@ class VGCN_BERT:
                     global_step_th += 1
                 if step % 40 == 0:
                     print("Epoch:{}-{}/{}, Train {} Loss: {}, Cumulated time: {}m ".format(epoch, step, len(train_dataloader),cfg_loss_criterion,
-                                                                                           loss.item(), (time.time() - train_start) / 60.0))
-                    file.write("Epoch:{}-{}/{}, Train {} Loss: {}, Cumulated time: {}m ".format(epoch, step, len(train_dataloader),cfg_loss_criterion,
-                                                                                           loss.item(), (time.time() - train_start) / 60.0))
+                                                                                           loss.item(), (time.time() - train_start) / 60.0),file=file)
 
 
-            print('--------------------------------------------------------------')
-            file.write('--------------------------------------------------------------')
+            print('--------------------------------------------------------------',file=file)
             valid_loss, valid_acc, perform_metrics = evaluate(model, gcn_adj_list, valid_dataloader, batch_size, epoch,'Valid_set')
             # test_loss, _, test_f1 = evaluate(model, gcn_adj_list, test_dataloader, batch_size, epoch, 'Test_set')
             all_loss_list['train'].append(tr_loss)
@@ -323,9 +305,8 @@ class VGCN_BERT:
             # all_loss_list['test'].append(test_loss)
             # all_f1_list['test'].append(test_f1)
             print("Epoch:{} completed, Total Train Loss:{}, Valid Loss:{}, Spend {}m ".format(epoch, tr_loss, valid_loss,
-                                                                                            (time.time() - train_start) / 60.0))
-            file.write("Epoch:{} completed, Total Train Loss:{}, Valid Loss:{}, Spend {}m ".format(epoch, tr_loss, valid_loss,
-                                                                                            (time.time() - train_start) / 60.0))
+                                                                                            (time.time() - train_start) / 60.0),file=file)
+            
         
         
         
@@ -338,8 +319,7 @@ class VGCN_BERT:
 
         # Save the figure
         plt.savefig('/sbksvol/shibani/loss_graph_3.png')           
-        print('\n**Optimization Finished!,Total spend:', (time.time() - train_start) / 60.0)
-        file.write('\n**Optimization Finished!,Total spend:', (time.time() - train_start) / 60.0)
+        print('\n**Optimization Finished!,Total spend:', (time.time() - train_start) / 60.0,file = file)
         pred, confidence = predict(model, test_dataloader)
 
         Predictions(self.data, self.graph, pred, initial_predictions, final_predictions)
