@@ -1,6 +1,7 @@
 # Author : Samantha Mahendran for RelEx
 import ast
 import configparser
+import os
 
 import train_test
 from func import re_number, extract_entites, CLEF_convert
@@ -15,6 +16,7 @@ else:
     no_rel_label = None
 
 print("Shibani Repo")
+print("cuurent directory", os.getcwd())
 test = config.getboolean('DEFAULT', 'test')
 binary = config.getboolean('DEFAULT', 'binary_classification')
 write_predictions = config.getboolean('DEFAULT', 'write_predictions')
