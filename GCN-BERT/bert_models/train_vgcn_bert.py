@@ -219,6 +219,9 @@ class VGCN_BERT:
 
                 f1_metrics = f1_score(np.array(all_label_ids).reshape(-1),
                                       np.array(predict_out).reshape(-1), average='weighted')
+                f1_metrics_micro = f1_score(np.array(all_label_ids).reshape(-1),
+                                      np.array(predict_out).reshape(-1), average='micro')
+                std_dev = np.std(np.array(all_label_ids).reshape(-1)== np.array(predict_out).reshape(-1))
                 print("Report:\n" + classification_report(np.array(all_label_ids).reshape(-1),
                                                           np.array(predict_out).reshape(-1), digits=4),file=file)
 
@@ -227,6 +230,7 @@ class VGCN_BERT:
             print('Epoch : %d, %s: %.3f Acc : %.3f on %s, Spend:%.3f minutes for evaluation'
                   % (epoch_th, ' '.join(perform_metrics_str), 100 * f1_metrics, 100. * ev_acc, dataset_name,
                      (end - start) / 60.0),file=file)
+            print('f1_micro: %d, std dev: %d' %(f1_metrics_micro,std_dev))
             print('--------------------------------------------------------------',file=file)
             return ev_loss, ev_acc, f1_metrics
 
@@ -318,7 +322,7 @@ class VGCN_BERT:
         plt.legend()
 
         # Save the figure
-        plt.savefig('/sbksvol/shibani/loss_graph_doqnsample.png')           
+        plt.savefig('/sbksvol/shibani/loss_graph_downsample.png')           
         print('\n**Optimization Finished!,Total spend:', (time.time() - train_start) / 60.0,file = file)
         pred, confidence = predict(model, test_dataloader)
 
