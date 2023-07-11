@@ -32,7 +32,7 @@ device = torch.device("cuda:0" if cuda_yes else "cpu")
 class VGCN_BERT:
     def __init__(self, model, cleanData, buildGraph, initial_predictions=None, final_predictions=None, del_stop_words=False, model_type='VGCN_BERT', train_epochs=15,
                  dropout=0.2, batch_size=8, gcn_embedding_dim=16, learning_rate0= 1e-5, l2_decay=0.001):
-        file_path = "/sbksvol/shibani/logs_downsample.txt"
+        file_path = "/sbksvol/shibani/logs_reverse.txt"
         file = open(file_path, "w")
         self.model = model
         self.data = cleanData
@@ -322,7 +322,7 @@ class VGCN_BERT:
         plt.legend()
 
         # Save the figure
-        plt.savefig('/sbksvol/shibani/loss_graph_downsample.png')           
+        plt.savefig('/sbksvol/shibani/loss_reverse.png')           
         print('\n**Optimization Finished!,Total spend:', (time.time() - train_start) / 60.0,file = file)
         pred, confidence = predict(model, test_dataloader)
 
