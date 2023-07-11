@@ -230,7 +230,7 @@ class VGCN_BERT:
             print('Epoch : %d, %s: %.3f Acc : %.3f on %s, Spend:%.3f minutes for evaluation'
                   % (epoch_th, ' '.join(perform_metrics_str), 100 * f1_metrics, 100. * ev_acc, dataset_name,
                      (end - start) / 60.0),file=file)
-            print('f1_micro: %d, std dev: %d' %(f1_metrics_micro,std_dev))
+            print('f1_micro: %d, std dev: %d' %(f1_metrics_micro,std_dev), file=file)
             print('--------------------------------------------------------------',file=file)
             return ev_loss, ev_acc, f1_metrics
 
