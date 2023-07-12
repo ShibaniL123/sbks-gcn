@@ -31,17 +31,17 @@ device = torch.device("cuda:0" if cuda_yes else "cpu")
 
 class VGCN_BERT:
     def __init__(self, model, cleanData, buildGraph, initial_predictions=None, final_predictions=None, del_stop_words=False, model_type='VGCN_BERT', train_epochs=15,
-                 dropout=0.2, batch_size=4, gcn_embedding_dim=16, learning_rate0= 1e-5, l2_decay=0.001):
-        file_path = "/sbksvol/shibani/logs_biobert_large.txt"
+                 dropout=0.2, batch_size=8, gcn_embedding_dim=16, learning_rate0= 1e-5, l2_decay=0.001):
+        file_path = "/sbksvol/shibani/logs_reverse.txt"
         file = open(file_path, "w")
         self.model = model
         self.data = cleanData
         self.graph = buildGraph
         print("device",device,file=file)
-        MAX_SEQ_LENGTH = 200 + gcn_embedding_dim
+        MAX_SEQ_LENGTH = 300 + gcn_embedding_dim
         gradient_accumulation_steps = 1
         bert_model_scale = 'bert-base-uncased'
-        bert_state_path = '/sbksvol/jiawei/re-model-data/weights/biobert_large_v1.1_pubmed_torch'
+        bert_state_path = '/sbksvol/jiawei/re-model-data/weights/biobert_base_v1.0_torch'
         do_lower_case = True
         warmup_proportion = 0.1
         perform_metrics_str = ['weighted avg', 'f1-score']
@@ -224,6 +224,8 @@ class VGCN_BERT:
                 std_dev = np.std(np.array(all_label_ids).reshape(-1)== np.array(predict_out).reshape(-1))
                 print("Report:\n" + classification_report(np.array(all_label_ids).reshape(-1),
                                                           np.array(predict_out).reshape(-1), digits=4),file=file)
+                print("Report:\n" + classification_report(np.array(all_label_ids).reshape(-1),
+                                                          np.array(predict_out).reshape(-1), digits=4))
 
             ev_acc = correct / total
             end = time.time()
@@ -312,6 +314,9 @@ class VGCN_BERT:
             # all_f1_list['test'].append(test_f1)
             print("Epoch:{} completed, Total Train Loss:{}, Valid Loss:{}, Spend {}m ".format(epoch, tr_loss, valid_loss,
                                                                                             (time.time() - train_start) / 60.0),file=file)
+            print("Epoch:{} completed, Total Train Loss:{}, Valid Loss:{}, Spend {}m ".format(epoch, tr_loss, valid_loss,
+                                                                                            (time.time() - train_start) / 60.0))
+  
             
         
         
@@ -324,7 +329,7 @@ class VGCN_BERT:
         plt.legend()
 
         # Save the figure
-        plt.savefig('/sbksvol/shibani/loss_biobertlarge.png')           
+        plt.savefig('/sbksvol/shibani/loss_reverse.png')           
         print('\n**Optimization Finished!,Total spend:', (time.time() - train_start) / 60.0,file = file)
         pred, confidence = predict(model, test_dataloader)
 
