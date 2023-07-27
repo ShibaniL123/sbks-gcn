@@ -226,16 +226,20 @@ class VGCN_BERT:
                                                           np.array(predict_out).reshape(-1), digits=4),file=file)
                 print("Report:\n" + classification_report(np.array(all_label_ids).reshape(-1),
                                                           np.array(predict_out).reshape(-1), digits=4))
+                print("micro average",f1_metrics_micro)
+                print("std dev",std_dev)
+                print("micro average",f1_metrics_micro,file=file)
+                print("std dev",std_dev,file=file)
+                a = np.array(all_label_ids).reshape(-1)
+                print(a[0:5])
+                b = np.array(predict_out).reshape(-1)
+                print(b[0:5])
 
             ev_acc = correct / total
             end = time.time()
             print('Epoch : %d, %s: %.3f Acc : %.3f on %s, Spend:%.3f minutes for evaluation'
                   % (epoch_th, ' '.join(perform_metrics_str), 100 * f1_metrics, 100. * ev_acc, dataset_name,
                      (end - start) / 60.0),file=file)
-            print('f1_micro: %d' %(f1_metrics_micro), file=file)
-            print('std_dev: %d' %(std_dev), file=file)
-            print('f1_micro: %d' %(f1_metrics_micro))
-            print('std_dev: %d' %(std_dev))
             print('--------------------------------------------------------------',file=file)
             return ev_loss, ev_acc, f1_metrics
 
