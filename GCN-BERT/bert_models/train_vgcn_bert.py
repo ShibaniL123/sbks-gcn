@@ -15,6 +15,7 @@ from torch.utils.data import DataLoader
 from model_vgcn_bert import VGCN_Bert
 from sklearn.metrics import classification_report
 from sklearn.metrics import f1_score
+from sklearn.metrics import confusion_matrix
 from pytorch_pretrained_bert.tokenization import BertTokenizer
 from pytorch_pretrained_bert.optimization import BertAdam  # , warmup_linear
 from eval.write_predictions import Predictions
@@ -32,7 +33,7 @@ device = torch.device("cuda:0" if cuda_yes else "cpu")
 class VGCN_BERT:
     def __init__(self, model, cleanData, buildGraph, initial_predictions=None, final_predictions=None, del_stop_words=False, model_type='VGCN_BERT', train_epochs=15,
                  dropout=0.2, batch_size=8, gcn_embedding_dim=16, learning_rate0= 1e-5, l2_decay=0.001):
-        file_path = "/sbksvol/shibani/logs_down_sample_reverse.txt"
+        file_path = "/sbksvol/shibani/logs_down_sample_reverse1.txt"
         file = open(file_path, "w")
         self.model = model
         self.data = cleanData
@@ -221,15 +222,19 @@ class VGCN_BERT:
                                       np.array(predict_out).reshape(-1), average='weighted')
                 f1_metrics_micro = f1_score(np.array(all_label_ids).reshape(-1),
                                       np.array(predict_out).reshape(-1), average='micro')
-                std_dev = np.std(np.array(all_label_ids).reshape(-1)== np.array(predict_out).reshape(-1))
+                differences = np.subtract(np.array(all_label_ids).reshape(-1), np.array(predict_out).reshape(-1))
+                std_dev = np.std(differences)
+                conf_matrix = confusion_matrix(np.array(all_label_ids).reshape(-1), np.array(predict_out).reshape(-1))
                 print("Report:\n" + classification_report(np.array(all_label_ids).reshape(-1),
                                                           np.array(predict_out).reshape(-1), digits=4),file=file)
                 print("Report:\n" + classification_report(np.array(all_label_ids).reshape(-1),
                                                           np.array(predict_out).reshape(-1), digits=4))
                 print("micro average",f1_metrics_micro)
                 print("std dev",std_dev)
+                print("confusion matrix",conf_matrix)
                 print("micro average",f1_metrics_micro,file=file)
                 print("std dev",std_dev,file=file)
+                print("confusion matrix",conf_matrix,file=file)
                 a = np.array(all_label_ids).reshape(-1)
                 print(a[0:5])
                 b = np.array(predict_out).reshape(-1)
@@ -336,7 +341,7 @@ class VGCN_BERT:
         plt.legend()
 
         # Save the figure
-        plt.savefig('/sbksvol/shibani/down_sample_reverse.png')           
+        plt.savefig('/sbksvol/shibani/down_sample_reverse1.png')           
         print('\n**Optimization Finished!,Total spend:', (time.time() - train_start) / 60.0,file = file)
         pred, confidence = predict(model, test_dataloader)
 
