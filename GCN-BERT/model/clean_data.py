@@ -53,6 +53,7 @@ class DataCleaning:
         self.all_train_data = shuffle(self.model.meta_train_data)
         self.test_data = shuffle(self.model.meta_test_data)
 
+        #IMPORTANT
         data = self.all_train_data  + self.test_data
         corpus = []
         labels = []

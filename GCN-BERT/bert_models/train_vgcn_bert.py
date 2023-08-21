@@ -33,7 +33,7 @@ device = torch.device("cuda:0" if cuda_yes else "cpu")
 class VGCN_BERT:
     def __init__(self, model, cleanData, buildGraph, initial_predictions=None, final_predictions=None, del_stop_words=False, model_type='VGCN_BERT', train_epochs=15,
                  dropout=0.2, batch_size=8, gcn_embedding_dim=16, learning_rate0= 1e-5, l2_decay=0.001):
-        file_path = "/sbksvol/shibani/logs_down_sample_reverse_merged.txt"
+        file_path = "/sbksvol/shibani/logs_down_sample_reverse_2.txt"
         file = open(file_path, "w")
         self.model = model
         self.data = cleanData
@@ -119,6 +119,7 @@ class VGCN_BERT:
         print(self.graph.class_labels,file=file)
         train_classes_num, train_classes_weight = get_class_count_and_weight(train_y, len(self.graph.class_labels))
         print("train class weight",train_classes_weight,file=file)
+        print("train class weight",train_classes_weight)
         loss_weight = torch.tensor(train_classes_weight).to(device)
 
         # tokenizer = BertTokenizer.from_pretrained(bert_model_scale, do_lower_case=do_lower_case)
@@ -163,6 +164,8 @@ class VGCN_BERT:
         print("  Num examples for validate = %d" % len(valid_examples),file=file)
         print("  Batch size = %d" % batch_size,file=file)
         print("  Num steps = %d" % total_train_steps,file=file)
+
+        print('  Train_classes count:', train_classes_num)
         # %%
         '''
         Train vgcn_bert model
@@ -245,6 +248,9 @@ class VGCN_BERT:
             print('Epoch : %d, %s: %.3f Acc : %.3f on %s, Spend:%.3f minutes for evaluation'
                   % (epoch_th, ' '.join(perform_metrics_str), 100 * f1_metrics, 100. * ev_acc, dataset_name,
                      (end - start) / 60.0),file=file)
+            print('Epoch : %d, %s: %.3f Acc : %.3f on %s, Spend:%.3f minutes for evaluation'
+                  % (epoch_th, ' '.join(perform_metrics_str), 100 * f1_metrics, 100. * ev_acc, dataset_name,
+                     (end - start) / 60.0))
             print('--------------------------------------------------------------',file=file)
             return ev_loss, ev_acc, f1_metrics
 
@@ -312,6 +318,8 @@ class VGCN_BERT:
                 if step % 40 == 0:
                     print("Epoch:{}-{}/{}, Train {} Loss: {}, Cumulated time: {}m ".format(epoch, step, len(train_dataloader),cfg_loss_criterion,
                                                                                            loss.item(), (time.time() - train_start) / 60.0),file=file)
+                    print("Epoch:{}-{}/{}, Train {} Loss: {}, Cumulated time: {}m ".format(epoch, step, len(train_dataloader),cfg_loss_criterion,
+                                                                                           loss.item(), (time.time() - train_start) / 60.0))
             
                 torch.cuda.empty_cache()
 
@@ -341,7 +349,7 @@ class VGCN_BERT:
         plt.legend()
 
         # Save the figure
-        plt.savefig('/sbksvol/shibani/down_sample_reverse_merged.png')           
+        plt.savefig('/sbksvol/shibani/down_sample_reverse_2.png')           
         print('\n**Optimization Finished!,Total spend:', (time.time() - train_start) / 60.0,file = file)
         pred, confidence = predict(model, test_dataloader)
 
