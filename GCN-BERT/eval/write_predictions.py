@@ -6,7 +6,7 @@ import pandas as pd
 
 
 class Predictions:
-    def __init__(self, cleanData, graph, pred, initial_predictions, final_predictions, No_Rel=False, dominant_entity='S'):
+    def __init__(self, cleanData, graph, pred, initial_predictions, final_predictions, No_Rel=True, dominant_entity='S'):
         '''
         Write predictions back to files
         :param final_predictions: predicted relations
@@ -57,7 +57,7 @@ class Predictions:
                 f = str(file) + ".ann"
                 # print(f)
                 # key for relations (not for a document but for all files)
-            key = "R" + str(x + 1)
+            key = "R" + str(x)
             # entity pair in the relations
             e1 = "T" + str(e1)
             e2 = "T" + str(e2)
